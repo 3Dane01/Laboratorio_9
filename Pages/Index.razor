@@ -1,0 +1,79 @@
+﻿@page "/"
+@inject HttpClient Http
+
+<PageTitle>Index</PageTitle>
+
+<h1>Inscripciones</h1>
+<h2>Manejo de Inscripciones</h2>
+
+<div class="container text-center">
+    <div class="row">
+        <div class="col-6">
+            <b>Alumnos</b>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            @if (alumnos == null)
+            {
+                <p><em>Cargando alumnos...</em></p>
+            }
+            else
+            {
+                <select class="form-select" aria-label="Default select example">
+                    <option selected>Seleccione al alumno</option>
+                    @foreach (var alumno in alumnos)
+                    {
+                        <option value="@alumno.Dpi">@alumno.Nombre</option>
+                    }
+                </select>
+            }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <b>Talleres</b>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            @if (talleres == null)
+            {
+                <p><em>Cargando talleres...</em></p>
+            }
+            else
+            {
+                <select class="form-select form-select-lg mb-3" aria-label="Large select example">
+                    <option selected>Seleccione el taller</option>
+                    @foreach (var taller in talleres)
+                    {
+                        <option value="@taller.Codigo">@taller.Nombre</option>
+                    }
+                </select>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    List<Alumno> alumnos;
+    List<Taller> talleres;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            alumnos = await Http.GetFromJsonAsync<List<Alumno>>("sample-data/Alumno.json");
+            
+            talleres = await Http.GetFromJsonAsync<List<Taller>>("sample-data/archivotaller.json");
+            
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error al cargar datos: " + ex.Message);
+        }
+    }
+}
+
+
+                
