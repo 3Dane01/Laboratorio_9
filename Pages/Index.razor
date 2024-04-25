@@ -56,24 +56,88 @@
     </div>
 </div>
 <div>
-    <button class="btn btn-primary" @onclick="GuardarInscripcion">Click me</button>
+    <button class="btn btn-primary" @onclick="GuardarInscripcion">Inscribir Alumno</button>
+    <button class="btn btn-secondary" @onclick="CrearReporte">Ver resporte</button>
+    <button class="btn btn-outline-secondary" @onclick="BorrarInscripciones">Borrar Inscripciones</button>
+</div>
+
+<div>
+    @if (inscripciones == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>DPI</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var inscripcion in inscripciones)
+                {
+                    <tr>
+                        <td>@inscripcion.Codigo</td>
+                        <td>@inscripcion.Dpi</td>
+                        <td>@inscripcion.Fecha.ToShortDateString()</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+
+<div>
+    @if (reportes.Count > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Alumno</th>
+                    <th>Taller</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var reporte in reportes)
+                {
+                    <tr>
+                        <td>@reporte.nombreAlumno</td>
+                        <td>@reporte.nombreTaller</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </div>
 
 @code {
     List<Alumno> alumnos = new List<Alumno>();
     List<Taller> talleres = new List<Taller>();
     List<Inscripcion> inscripciones = new List<Inscripcion>();
+    List<Reporte> reportes = new List<Reporte>();
 
     string codigoTaller;
     string dpiAlumno;
 
     protected override async Task OnInitializedAsync()
     {
-        try
+        .
+
+
+
+
+try
         {
-            alumnos = await Http.GetFromJsonAsync<List<Alumno>>("sample-data/Alumno.json");
+            alum.
+            nos = await Http.GetFromJsonAsync<List<Alumno>>("sample-data/Alumno.json");
 
             talleres = await Http.GetFromJsonAsync<List<Taller>>("sample-data/archivotaller.json");
+
+            inscripciones = await localStorage.GetItemAsync<List<Inscripcion>>("inscripciones");
 
         }
         catch (Exception ex)
@@ -83,13 +147,38 @@
     }
     protected async Task GuardarInscripcion()
     {
-        Inscripcion inscripcion = new Inscripcion();
-        inscripcion.Codigo = codigoTaller;
-        inscripcion.Dpi = dpiAlumno;
-        inscripcion.Fecha = DateTime.Now;
+        //SI ES DIFERENTTE A NULL   
+        if (!string.IsNullOrEmpty(codigoTaller) && !string.IsNullOrEmpty(dpiAlumno))
+        {
+            Inscripcion inscripcion = new Inscripcion();
+            inscripcion.Codigo = codigoTaller;
+            inscripcion.Dpi = dpiAlumno;
+            inscripcion.Fecha = DateTime.Now;
 
-        inscripciones.Add(inscripcion);
+            inscripciones.Add(inscripcion);
+            //QUE ES LO QUE VA A GUARDAR EN EL LOCALSTORAGE
+            await localStorage.SetItemAsync("inscripciones", inscripciones);
+        }
+    }
+    protected async Task BorrarInscripciones()
+    {
+        await localStorage.RemoveItemAsync("inscripciones");
+        inscripciones.Clear();
+    }
 
-        await localStorage.SetItemAsync("inscripciones", "inscripciones");
+    protected void CrearReporte()
+    {
+        //variable a creear, de donde se quiere ir a compiar
+        foreach(var inscrip in inscripciones)
+        {
+            Alumno alumno = alumnos.Find(a => a.Dpi == inscrip.Dpi);
+            Taller taller = talleres.Find(t => t.Codigo == inscrip.Codigo);
+
+            Reporte reporte = new Reporte();
+            reporte.nombreTaller = taller.Nombre;
+            reporte.nombreAlumno = alumno.Nombre;
+
+            reportes.Add(reporte);
+        }
     }
 }
