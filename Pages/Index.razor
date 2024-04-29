@@ -107,7 +107,7 @@
                     <tr>
                         <td>@reporte.nombreAlumno</td>
                         <td>@reporte.nombreTaller</td>
-                    </tr>
+                     </tr>
                 }
             </tbody>
         </table>
@@ -124,16 +124,10 @@
     string dpiAlumno;
 
     protected override async Task OnInitializedAsync()
-    {
-        .
-
-
-
-
-try
+    {   
+        try
         {
-            alum.
-            nos = await Http.GetFromJsonAsync<List<Alumno>>("sample-data/Alumno.json");
+            alumnos = await Http.GetFromJsonAsync<List<Alumno>>("sample-data/Alumno.json");
 
             talleres = await Http.GetFromJsonAsync<List<Taller>>("sample-data/archivotaller.json");
 
@@ -145,6 +139,7 @@ try
             Console.WriteLine("Error al cargar datos: " + ex.Message);
         }
     }
+
     protected async Task GuardarInscripcion()
     {
         //SI ES DIFERENTTE A NULL   
@@ -180,5 +175,6 @@ try
 
             reportes.Add(reporte);
         }
+        //Holi
     }
 }
